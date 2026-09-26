@@ -19,8 +19,19 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-main); }
 
-        header { background-color: var(--surface-color); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; height: 70px; border-bottom: 1px solid var(--border-color); }
-        .logo { font-size: 1.5rem; font-weight: 300; letter-spacing: 5px; color: #000; }
+        /* HEADER - Fully Responsive Layout */
+        header { 
+            background-color: var(--surface-color); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 12px 20px; 
+            min-height: 70px; 
+            border-bottom: 1px solid var(--border-color); 
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .logo { font-size: 1.5rem; font-weight: 300; letter-spacing: 4px; color: #000; }
         
         .ticker-pill { 
             background: var(--bg-color); 
@@ -33,6 +44,7 @@
             display: flex; 
             align-items: center; 
             overflow: hidden; 
+            max-width: 100%;
             width: 420px; 
             white-space: nowrap; 
         }
@@ -51,48 +63,75 @@
         }
 
         .dot { height: 6px; width: 6px; background-color: #2ecc71; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-        .header-btns button { background: transparent; border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 4px; margin-left: 10px; cursor: pointer; font-weight: bold; font-size: 0.8rem; color: var(--text-muted); }
+        .header-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+        .header-btns button { background: transparent; border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; color: var(--text-muted); }
         .header-btns button.active { color: var(--primary-gold); border-color: var(--primary-gold); background: rgba(195, 155, 85, 0.05); }
 
-        .container { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
+        .container { max-width: 1400px; margin: 20px auto; padding: 0 15px; }
 
-        .admin-header { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 25px 30px; margin-bottom: 30px; display: none; justify-content: space-between; align-items: center; }
-        .admin-header h1 { font-size: 1.5rem; font-weight: normal; margin-bottom: 5px;}
+        .admin-header { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 25px; display: none; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .admin-header h1 { font-size: 1.4rem; font-weight: normal; margin-bottom: 5px;}
         .admin-header p { font-size: 0.85rem; color: var(--text-muted); }
-        .btn-gold { background: var(--primary-gold); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-gold { background: var(--primary-gold); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .tabs { display: flex; gap: 25px; border-bottom: 2px solid var(--border-color); margin-bottom: 30px; overflow-x: auto; }
-        .tab { padding-bottom: 15px; font-size: 0.82rem; font-weight: bold; color: var(--text-muted); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+        .tabs { display: flex; gap: 15px; border-bottom: 2px solid var(--border-color); margin-bottom: 25px; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
+        .tab { padding: 10px 5px; font-size: 0.82rem; font-weight: bold; color: var(--text-muted); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
         .tab.active { color: var(--primary-gold); border-bottom: 3px solid var(--primary-gold); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
         .admin-only { display: none !important; }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: var(--surface-color); padding: 30px; border-radius: 12px; border: 1px solid var(--border-color); }
-        .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;}
-        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); font-size: 0.9rem; color: var(--text-main); outline: none; }
+        /* Estimator Layout Responsive */
+        .estimator-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: var(--surface-color); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); height: fit-content; }
+        .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;}
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); font-size: 0.88rem; color: var(--text-main); outline: none; }
         .form-group input:focus { border-color: var(--primary-gold); }
-        #status-msg { grid-column: span 2; font-weight: bold; text-align: center; margin-top: 10px; }
+        #status-msg { grid-column: 1 / -1; font-weight: bold; text-align: center; margin-top: 10px; }
 
-        .custom-table { width: 100%; border-collapse: collapse; background: var(--surface-color); border-radius: 12px; overflow: hidden; border: 1px solid var(--border-color); }
-        .custom-table th, .custom-table td { padding: 15px 20px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
+        /* Table Responsive Container */
+        .table-responsive { width: 100%; overflow-x: auto; background: var(--surface-color); border-radius: 12px; border: 1px solid var(--border-color); }
+        .custom-table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        .custom-table th, .custom-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
         .custom-table th { background: var(--bg-color); color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
 
-        .showroom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-        .jewelry-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
+        /* Showroom Responsive Grid */
+        .showroom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .jewelry-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
         .jewelry-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
         
-        .jewelry-img-box { width: 100%; height: 200px; border-radius: 8px; overflow: hidden; background: #f7f7f7; margin-bottom: 15px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
+        .jewelry-img-box { width: 100%; height: 190px; border-radius: 8px; overflow: hidden; background: #f7f7f7; margin-bottom: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
         .jewelry-img-box img { width: 100%; height: 100%; object-fit: cover; }
         
         .jewelry-card .badge { display: inline-block; background: rgba(195, 155, 85, 0.1); color: var(--primary-gold); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; margin-bottom: 10px; width: fit-content; }
-        .jewelry-card h3 { font-size: 1.05rem; margin-bottom: 10px; }
+        .jewelry-card h3 { font-size: 1rem; margin-bottom: 10px; }
         .jewelry-card .details-row { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px; }
-        .jewelry-card .price-tag { font-size: 1.2rem; font-weight: bold; color: var(--primary-gold); margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .jewelry-card .price-tag { font-size: 1.1rem; font-weight: bold; color: var(--primary-gold); margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; }
 
-        .calc-result-box { background: #f7fdf9; border: 1px solid #2ecc71; padding: 20px; border-radius: 8px; margin-top: 15px; grid-column: span 2; }
+        .calc-result-box { background: #f7fdf9; border: 1px solid #2ecc71; padding: 15px; border-radius: 8px; margin-top: 15px; grid-column: 1 / -1; }
+
+        /* Media Queries for Mobile & Ultra-Wide TV Screens */
+        @media screen and (max-width: 768px) {
+            header { flex-direction: column; text-align: center; justify-content: center; padding: 15px 10px; }
+            .ticker-pill { width: 100%; margin: 5px 0; }
+            .header-btns { width: 100%; justify-content: center; }
+            
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group { grid-column: span 1 !important; }
+
+            .showroom-grid { grid-template-columns: 1fr; }
+            .jewelry-img-box { height: 220px; }
+            .estimator-grid { grid-template-columns: 1fr; }
+        }
+
+        @media screen and (min-width: 1800px) {
+            .container { max-width: 1700px; }
+            .showroom-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+            body { font-size: 18px; }
+            .logo { font-size: 2.2rem; }
+        }
     </style>
 </head>
 <body>
@@ -133,21 +172,21 @@
 
         <!-- TAB 0: SHOWROOM CATALOG -->
         <div id="showroom" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
                 <h3 style="font-size: 1.1rem; color: var(--primary-gold);">✨ LIVE SHOWROOM GOLD & DIAMOND CATALOG</h3>
                 <button onclick="loadShowroomData()" class="btn-gold" style="padding: 6px 12px; font-size: 0.75rem;">↻ Refresh Catalog</button>
             </div>
             
             <div class="showroom-grid" id="showroom-grid-container">
-                <p style="grid-column: span 3; text-align: center; color: var(--text-muted);">⏳ Fetching Live Sheet Rate & Converting...</p>
+                <p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">⏳ Fetching Live Sheet Rate & Converting...</p>
             </div>
         </div>
 
         <!-- TAB 1: CUSTOM ESTIMATOR -->
         <div id="estimator" class="tab-content">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                <div class="form-grid" style="grid-template-columns: 1fr 1fr; height: fit-content;">
-                    <div style="grid-column: span 2;">
+            <div class="estimator-grid">
+                <div class="form-grid">
+                    <div style="grid-column: 1 / -1;">
                         <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--primary-gold);">
                             📝 1. Custom Demand Pricing
                         </h3>
@@ -190,14 +229,14 @@
                 </div>
 
                 <!-- REVERSE BUDGET ESTIMATOR -->
-                <div class="form-grid" style="grid-template-columns: 1fr 1fr; height: fit-content;">
-                    <div style="grid-column: span 2;">
+                <div class="form-grid">
+                    <div style="grid-column: 1 / -1;">
                         <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--primary-gold);">
                             🎯 2. Reverse Budget Estimator
                         </h3>
                     </div>
 
-                    <div class="form-group" style="grid-column: span 2;">
+                    <div class="form-group" style="grid-column: 1 / -1;">
                         <label>Target Customer Budget (₹)</label>
                         <input type="number" id="budg-amount" placeholder="e.g. 50000" oninput="calcReverseBudget()">
                     </div>
@@ -227,26 +266,28 @@
 
         <!-- TAB 2: INVENTORY AUDIT TABLE -->
         <div id="inventory" class="tab-content">
-            <table class="custom-table">
-                <thead>
-                    <tr>
-                        <th>SKU & Name</th>
-                        <th>Alloy Purity</th>
-                        <th>Weight</th>
-                        <th>Labor Fee</th>
-                        <th>Image Link</th>
-                    </tr>
-                </thead>
-                <tbody id="inventory-table-body">
-                    <tr><td colspan="5">Loading...</td></tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>SKU & Name</th>
+                            <th>Alloy Purity</th>
+                            <th>Weight</th>
+                            <th>Labor Fee</th>
+                            <th>Image Link</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventory-table-body">
+                        <tr><td colspan="5">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- TAB 3: PRICING MATRICES -->
         <div id="pricing" class="tab-content">
             <div class="form-grid">
-                <div style="grid-column: span 2;">
+                <div style="grid-column: 1 / -1;">
                     <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">LIVE CONVERTED METAL RATES</h3>
                 </div>
                 <div class="form-group"><label>24K Gold Base Rate (per Gram)</label><input type="text" id="matrix-24k" value="Calculating..." readonly></div>
@@ -259,7 +300,7 @@
         <!-- TAB 4: DESIGN REGISTER -->
         <div id="design" class="tab-content">
             <div class="form-grid">
-                <div style="grid-column: span 2; margin-bottom: 10px;">
+                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
                     <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">💎 REGISTER NEW DESIGN TO CLOUD SHEET</h3>
                 </div>
 
@@ -286,12 +327,12 @@
                 <div class="form-group"><label>METAL WEIGHT (G)</label><input type="number" id="weight" placeholder="0.0"></div>
                 <div class="form-group"><label>LABOR COST (₹)</label><input type="number" id="labor" placeholder="150"></div>
                 
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group" style="grid-column: 1 / -1;">
                     <label>UPLOAD JEWELRY IMAGE</label>
                     <input type="file" id="imageFile" accept="image/*" style="padding: 10px; background: transparent; border: 1px dashed var(--primary-gold);">
                 </div>
 
-                <div class="form-group" style="grid-column: span 2;">
+                <div class="form-group" style="grid-column: 1 / -1;">
                     <button class="btn-gold" id="submitBtn" onclick="uploadData()" style="width: 100%;">Sync to Google Sheets</button>
                 </div>
                 <div id="status-msg"></div>
@@ -382,7 +423,7 @@
             const gridContainer = document.getElementById('showroom-grid-container');
             const tableBody = document.getElementById('inventory-table-body');
             
-            gridContainer.innerHTML = `<p style="grid-column: span 3; text-align: center; color: var(--text-muted);">⏳ Syncing Live Rate & Inventory from Google Sheet...</p>`;
+            gridContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">⏳ Syncing Live Rate & Inventory from Google Sheet...</p>`;
 
             fetch(SCRIPT_URL, { method: "GET", redirect: "follow" })
             .then(res => res.json())
@@ -394,7 +435,7 @@
 
                 let items = data.items || [];
                 if(!items || items.length === 0) {
-                    gridContainer.innerHTML = `<p style="grid-column: span 3; text-align: center;">No Products Available in Google Sheet.</p>`;
+                    gridContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center;">No Products Available in Google Sheet.</p>`;
                     return;
                 }
 
@@ -450,7 +491,7 @@
                 });
             })
             .catch(err => {
-                gridContainer.innerHTML = `<p style="grid-column: span 3; text-align: center; color: red;">❌ Error loading data from Google Script.</p>`;
+                gridContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: red;">❌ Error loading data from Google Script.</p>`;
                 console.error("Fetch Error:", err);
             });
         }
