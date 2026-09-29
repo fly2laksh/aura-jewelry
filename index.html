@@ -3,339 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AURA - Jewelry Engine (Live Price & Multi-Purity)</title>
+    <title>AURA - Enterprise Jewelry Suite</title>
+    <!-- SheetJS CDN for Bulk Excel/CSV Parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --bg-color: #fcfbf9;
+            --bg-color: #f7f6f2;
             --surface-color: #ffffff;
-            --text-main: #333333;
-            --text-muted: #888888;
-            --primary-gold: #c39b55;
-            --border-color: #eaeaea;
-            --font-family: 'Segoe UI', Roboto, Helvetica, sans-serif;
-            --card-green: #eefaf3; --card-yellow: #fffaf0; --card-blue: #f0f7ff; --card-red: #fff0f0;
+            --text-main: #1a1a1a;
+            --text-muted: #737373;
+            --primary-gold: #b8860b;
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #aa771c 100%);
+            --border-color: #e5e5e0;
+            --dark-accent: #0f172a;
+            --font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-main); }
 
-        /* HEADER - Fully Responsive Layout */
+        /* HEADER & ANIMATED BLINKING LOGO */
         header { 
             background-color: var(--surface-color); 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 12px 20px; 
-            min-height: 70px; 
+            padding: 14px 24px; 
             border-bottom: 1px solid var(--border-color); 
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
         }
-        .logo { font-size: 1.5rem; font-weight: 300; letter-spacing: 4px; color: #000; }
-        
+
+        .logo { 
+            font-size: 1.6rem; 
+            font-weight: 800; 
+            letter-spacing: 5px; 
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: auraBlink 2.5s infinite ease-in-out;
+        }
+
+        @keyframes auraBlink {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 2px rgba(184, 134, 11, 0.2)); }
+            50% { opacity: 0.35; filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.8)); }
+        }
+
         .ticker-pill { 
             background: var(--bg-color); 
             border: 1px solid var(--border-color); 
             border-radius: 50px; 
-            padding: 8px 15px; 
-            font-size: 0.75rem; 
-            font-weight: bold; 
+            padding: 8px 18px; 
+            font-size: 0.78rem; 
+            font-weight: 600; 
             color: var(--primary-gold); 
             display: flex; 
             align-items: center; 
             overflow: hidden; 
+            width: 440px; 
             max-width: 100%;
-            width: 420px; 
             white-space: nowrap; 
         }
         .ticker-content {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             white-space: nowrap;
             padding-left: 100%;
-            animation: marquee 14s linear infinite;
+            animation: marquee 16s linear infinite;
         }
         .ticker-pill:hover .ticker-content { animation-play-state: paused; }
-        @keyframes marquee {
-            0%   { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        .dot { height: 6px; width: 6px; background-color: #2ecc71; border-radius: 50%; display: inline-block; flex-shrink: 0; }
-        .header-btns { display: flex; gap: 8px; flex-wrap: wrap; }
-        .header-btns button { background: transparent; border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; color: var(--text-muted); }
-        .header-btns button.active { color: var(--primary-gold); border-color: var(--primary-gold); background: rgba(195, 155, 85, 0.05); }
+        .dot { height: 7px; width: 7px; background-color: #10b981; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+        .header-btns { display: flex; gap: 10px; }
+        .header-btns button { background: transparent; border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.82rem; color: var(--text-muted); transition: 0.2s; }
+        .header-btns button.active { color: #fff; background: var(--dark-accent); border-color: var(--dark-accent); }
 
-        .container { max-width: 1400px; margin: 20px auto; padding: 0 15px; }
+        .container { max-width: 1400px; margin: 25px auto; padding: 0 20px; }
 
-        .admin-header { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; margin-bottom: 25px; display: none; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .admin-header h1 { font-size: 1.4rem; font-weight: normal; margin-bottom: 5px;}
-        .admin-header p { font-size: 0.85rem; color: var(--text-muted); }
-        .btn-gold { background: var(--primary-gold); color: #fff; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .btn-gold:disabled { opacity: 0.6; cursor: not-allowed; }
+        .admin-header { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 22px; margin-bottom: 25px; display: none; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border-left: 5px solid var(--primary-gold); }
+        .admin-header h1 { font-size: 1.35rem; font-weight: 700; color: var(--dark-accent); }
+        .btn-gold { background: var(--gold-gradient); color: #fff; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-gold:hover { opacity: 0.92; }
 
-        .tabs { display: flex; gap: 15px; border-bottom: 2px solid var(--border-color); margin-bottom: 25px; overflow-x: auto; white-space: nowrap; padding-bottom: 5px; }
-        .tab { padding: 10px 5px; font-size: 0.82rem; font-weight: bold; color: var(--text-muted); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
+        .tabs { display: flex; gap: 12px; border-bottom: 2px solid var(--border-color); margin-bottom: 25px; overflow-x: auto; white-space: nowrap; padding-bottom: 2px; }
+        .tab { padding: 12px 8px; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); cursor: pointer; text-transform: uppercase; letter-spacing: 1px; flex-shrink: 0; }
         .tab.active { color: var(--primary-gold); border-bottom: 3px solid var(--primary-gold); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
         .admin-only { display: none !important; }
 
-        /* Estimator Layout Responsive */
-        .estimator-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: var(--surface-color); padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); height: fit-content; }
-        .form-group label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px;}
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); font-size: 0.88rem; color: var(--text-main); outline: none; }
-        .form-group input:focus { border-color: var(--primary-gold); }
-        #status-msg { grid-column: 1 / -1; font-weight: bold; text-align: center; margin-top: 10px; }
-
-        /* Table Responsive Container */
-        .table-responsive { width: 100%; overflow-x: auto; background: var(--surface-color); border-radius: 12px; border: 1px solid var(--border-color); }
-        .custom-table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        .custom-table th, .custom-table td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
-        .custom-table th { background: var(--bg-color); color: var(--text-muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; }
-
-        /* Showroom Responsive Grid */
-        .showroom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .jewelry-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; justify-content: space-between; }
-        .jewelry-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .estimator-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; background: var(--surface-color); padding: 22px; border-radius: 12px; border: 1px solid var(--border-color); height: fit-content; }
+        .form-group label { display: block; font-size: 0.72rem; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;}
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; background: var(--bg-color); font-size: 0.88rem; outline: none; }
         
-        .jewelry-img-box { width: 100%; height: 190px; border-radius: 8px; overflow: hidden; background: #f7f7f7; margin-bottom: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
+        .table-responsive { width: 100%; overflow-x: auto; background: var(--surface-color); border-radius: 12px; border: 1px solid var(--border-color); }
+        .custom-table { width: 100%; border-collapse: collapse; min-width: 650px; }
+        .custom-table th, .custom-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.85rem; }
+        .custom-table th { background: var(--bg-color); color: var(--text-muted); text-transform: uppercase; font-size: 0.72rem; letter-spacing: 1px; }
+
+        .showroom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 22px; }
+        .jewelry-card { background: var(--surface-color); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+        .jewelry-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.06); }
+        .jewelry-img-box { width: 100%; height: 200px; border-radius: 8px; overflow: hidden; background: #f9f9f9; margin-bottom: 14px; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; }
         .jewelry-img-box img { width: 100%; height: 100%; object-fit: cover; }
         
-        .jewelry-card .badge { display: inline-block; background: rgba(195, 155, 85, 0.1); color: var(--primary-gold); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: bold; margin-bottom: 10px; width: fit-content; }
-        .jewelry-card h3 { font-size: 1rem; margin-bottom: 10px; }
-        .jewelry-card .details-row { display: flex; justify-content: space-between; font-size: 0.82rem; color: var(--text-muted); margin-bottom: 6px; }
-        .jewelry-card .price-tag { font-size: 1.1rem; font-weight: bold; color: var(--primary-gold); margin-top: 15px; border-top: 1px dashed var(--border-color); padding-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .jewelry-card .badge { display: inline-block; background: rgba(184, 134, 11, 0.1); color: var(--primary-gold); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-bottom: 10px; }
+        .jewelry-card .stock-tag { position: absolute; top: 25px; right: 25px; background: #10b981; color: #fff; padding: 3px 8px; font-size: 0.65rem; border-radius: 4px; font-weight: bold; }
+        .jewelry-card .stock-tag.out { background: #ef4444; }
 
-        .calc-result-box { background: #f7fdf9; border: 1px solid #2ecc71; padding: 15px; border-radius: 8px; margin-top: 15px; grid-column: 1 / -1; }
+        /* INVOICE DESIGN */
+        .invoice-card { background: #fff; border: 1px solid var(--border-color); border-radius: 12px; padding: 30px; }
+        .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid var(--primary-gold); padding-bottom: 15px; margin-bottom: 20px; }
 
-        /* Media Queries for Mobile & Ultra-Wide TV Screens */
-        @media screen and (max-width: 768px) {
-            header { flex-direction: column; text-align: center; justify-content: center; padding: 15px 10px; }
-            .ticker-pill { width: 100%; margin: 5px 0; }
-            .header-btns { width: 100%; justify-content: center; }
-            
-            .form-grid { grid-template-columns: 1fr; }
-            .form-group { grid-column: span 1 !important; }
+        /* BULK IMPORT DRAG-DROP BOX */
+        .drop-zone { border: 2px dashed var(--primary-gold); padding: 35px; text-align: center; border-radius: 12px; background: #fdfbf7; cursor: pointer; transition: 0.2s; }
+        .drop-zone:hover { background: #f8f3e8; }
 
-            .showroom-grid { grid-template-columns: 1fr; }
-            .jewelry-img-box { height: 220px; }
-            .estimator-grid { grid-template-columns: 1fr; }
-        }
+        /* VISITING CARD LOGIN MODAL */
+        .login-modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.7); display: none; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(4px); }
+        .card-container { perspective: 1000px; }
+        .card { width: 440px; height: 270px; position: relative; transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-style: preserve-3d; }
+        .card.is-flipped { transform: rotateY(180deg); }
+        .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 18px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); display: flex; overflow: hidden; }
+        .card-front { background: #a3d99b linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px); background-size: 20px 20px; }
+        .left-panel { width: 55%; background: #ffffff; padding: 18px; display: flex; flex-direction: column; justify-content: center; clip-path: polygon(0 0, 100% 0, 88% 100%, 0 100%); }
+        .right-panel { width: 45%; padding: 15px; display: flex; flex-direction: column; justify-content: center; }
+        .brand-logo { font-size: 20px; font-weight: 800; color: #143622; }
+        .modal-input { width: 100%; padding: 6px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 11px; margin-bottom: 6px; }
+        .modal-btn { width: 100%; padding: 7px; background: #143622; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px; }
+        .card-back { transform: rotateY(180deg); background: #ffffff; padding: 25px; flex-direction: column; justify-content: center; border: 2px solid #a3d99b; }
+        .close-modal-btn { position: absolute; top: 12px; right: 16px; background: transparent; border: none; font-size: 18px; cursor: pointer; }
 
-        @media screen and (min-width: 1800px) {
-            .container { max-width: 1700px; }
-            .showroom-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
-            body { font-size: 18px; }
-            .logo { font-size: 2.2rem; }
+        @media print {
+            body * { visibility: hidden; }
+            #printable-invoice, #printable-invoice * { visibility: visible; }
+            #printable-invoice { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">✦ A U R A</div>
+    <header class="no-print">
+        <div class="logo">✦ AURA</div>
         <div class="ticker-pill">
             <div class="ticker-content" id="live-ticker-content">
-                <span class="dot"></span> ⏳ Syncing Live Market Rate from Sheet...
+                <span class="dot"></span> ⏳ Syncing Live Market Rate & Inventory...
             </div>
         </div>
         <div class="header-btns">
             <button id="btn-showroom" class="active" onclick="switchToShowroom()">👁 SHOWROOM</button>
-            <button id="btn-admin" onclick="requestAdminAccess()">⚙ ADMIN</button>
+            <button id="btn-admin" onclick="requestAdminAccess()">⚙ ADMIN SYSTEM</button>
         </div>
     </header>
 
     <div class="container">
-        <div id="admin-header-box" class="admin-header">
+        <div id="admin-header-box" class="admin-header no-print">
             <div>
-                <span style="font-size: 0.7rem; font-weight: bold; color: var(--primary-gold);">SECURE CORE</span>
-                <h1>Admin Engine Mode</h1>
-                <p>Control live matrix values, audit metal costs, import Rapaport tables, and manage showroom stock.</p>
+                <span style="font-size: 0.7rem; font-weight: bold; color: var(--primary-gold);">EXECUTIVE CONTROL</span>
+                <h1>Jewelry Management Suite</h1>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Manage billing, inventory, bulk CSV imports, matrices, and catalog items.</p>
             </div>
-            <div>
-                <button class="btn-gold" style="background: transparent; color: var(--text-main); border: 1px solid var(--border-color); margin-right: 10px;">⤓ EXPORT XLSX</button>
-                <button class="btn-gold" onclick="switchTab('design')">+ NEW DESIGN</button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-gold" onclick="switchTab('invoice')">🧾 GENERATE BILL</button>
+                <button class="btn-gold" onclick="switchTab('import')">📂 BULK IMPORT</button>
             </div>
         </div>
 
-        <div class="tabs">
+        <div class="tabs no-print">
             <div class="tab active" id="tab-btn-showroom" onclick="switchTab('showroom')">✨ Showroom Catalog</div>
-            <div class="tab admin-only" id="tab-btn-estimator" onclick="switchTab('estimator')">🧮 Custom Estimator & Budget Tool</div>
-            <div class="tab admin-only" id="tab-btn-inventory" onclick="switchTab('inventory')">Inventory Audit Table</div>
-            <div class="tab admin-only" id="tab-btn-pricing" onclick="switchTab('pricing')">Pricing Matrices & Rules</div>
+            <div class="tab admin-only" id="tab-btn-invoice" onclick="switchTab('invoice')">🧾 Billing & Tax Invoice</div>
+            <div class="tab admin-only" id="tab-btn-inventory" onclick="switchTab('inventory')">📦 Inventory Audit & Stock</div>
+            <div class="tab admin-only" id="tab-btn-import" onclick="switchTab('import')">📂 Bulk Excel/CSV Import</div>
+            <div class="tab admin-only" id="tab-btn-estimator" onclick="switchTab('estimator')">🧮 Custom Estimator</div>
+            <div class="tab admin-only" id="tab-btn-pricing" onclick="switchTab('pricing')">Pricing Matrices</div>
             <div class="tab admin-only" id="tab-btn-design" onclick="switchTab('design')">Design Register</div>
         </div>
 
         <!-- TAB 0: SHOWROOM CATALOG -->
         <div id="showroom" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
-                <h3 style="font-size: 1.1rem; color: var(--primary-gold);">✨ LIVE SHOWROOM GOLD & DIAMOND CATALOG</h3>
-                <button onclick="loadShowroomData()" class="btn-gold" style="padding: 6px 12px; font-size: 0.75rem;">↻ Refresh Catalog</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 1.1rem; color: var(--primary-gold);">✨ SHOWROOM DISPLAY CATALOG</h3>
+                <button onclick="loadShowroomData()" class="btn-gold" style="padding: 6px 14px; font-size: 0.75rem;">↻ Refresh Catalog</button>
             </div>
-            
             <div class="showroom-grid" id="showroom-grid-container">
-                <p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">⏳ Fetching Live Sheet Rate & Converting...</p>
+                <p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">⏳ Loading Live Showroom Catalog...</p>
             </div>
         </div>
 
-        <!-- TAB 1: CUSTOM ESTIMATOR -->
-        <div id="estimator" class="tab-content">
+        <!-- TAB 1: INVOICE GENERATOR -->
+        <div id="invoice" class="tab-content">
             <div class="estimator-grid">
-                <div class="form-grid">
-                    <div style="grid-column: 1 / -1;">
-                        <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--primary-gold);">
-                            📝 1. Custom Demand Pricing
-                        </h3>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Gold Purity</label>
-                        <select id="cust-purity" onchange="calcCustomDemand()">
-                            <option value="24" id="opt-24k">24K Gold</option>
-                            <option value="22" id="opt-22k" selected>22K Gold</option>
-                            <option value="18" id="opt-18k">18K Gold</option>
-                            <option value="10" id="opt-10k">10K Gold</option>
+                <div class="form-grid no-print">
+                    <div style="grid-column: 1 / -1;"><h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--primary-gold);">🛒 Customer Billing</h3></div>
+                    <div class="form-group" style="grid-column: 1 / -1;">
+                        <label>Select Jewelry Item</label>
+                        <select id="inv-select-item" onchange="updateInvoicePreview()">
+                            <option value="">-- Choose Stock Item --</option>
                         </select>
                     </div>
-
-                    <div class="form-group">
-                        <label>Metal Weight (Grams)</label>
-                        <input type="number" id="cust-weight" placeholder="e.g. 5.5" oninput="calcCustomDemand()">
+                    <div class="form-group"><label>Customer Name</label><input type="text" id="cust-name" placeholder="Name" oninput="updateInvoicePreview()"></div>
+                    <div class="form-group"><label>Mobile</label><input type="text" id="cust-phone" placeholder="+91" oninput="updateInvoicePreview()"></div>
+                    <div class="form-group"><label>Quantity</label><input type="number" id="inv-qty" value="1" min="1" oninput="updateInvoicePreview()"></div>
+                    <div class="form-group"><label>Discount (₹)</label><input type="number" id="inv-discount" value="0" oninput="updateInvoicePreview()"></div>
+                    <div style="grid-column: 1 / -1; display: flex; gap: 10px;">
+                        <button class="btn-gold" style="flex:1;" onclick="processSaleAndDeductStock()">Checkout & Update Stock</button>
+                        <button class="btn-gold" style="background:var(--dark-accent);" onclick="window.print()">🖨️ Print Invoice</button>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label>Diamond Weight (Carat)</label>
-                        <input type="number" id="cust-diamond" placeholder="e.g. 0.25" oninput="calcCustomDemand()">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Labor Fee (₹)</label>
-                        <input type="number" id="cust-labor" placeholder="e.g. 1500" oninput="calcCustomDemand()">
-                    </div>
-
-                    <div class="calc-result-box" id="cust-result">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem;"><span>Gold Cost:</span><strong id="out-gold-cost">₹0.00</strong></div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem;"><span>Diamond Cost:</span><strong id="out-diamond-cost">₹0.00</strong></div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem;"><span>Labor Fee:</span><strong id="out-labor-cost">₹0.00</strong></div>
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.82rem;"><span>GST (3%):</span><strong id="out-gst-cost">₹0.00</strong></div>
-                        <div style="display: flex; justify-content: space-between; font-size: 1.1rem; border-top: 1px dashed #2ecc71; padding-top: 8px; color: #1e824c;">
-                            <strong>Total Estimated Price:</strong><strong id="out-total-price">₹0.00</strong>
+                <div class="invoice-card" id="printable-invoice">
+                    <div class="invoice-header">
+                        <div>
+                            <h2 style="color:var(--primary-gold); letter-spacing: 2px;">AURA JEWELERS</h2>
+                            <p style="font-size: 0.75rem; color: var(--text-muted);">GSTIN: 07AAAAA0000A1Z5 | Reg. Tax Office</p>
+                        </div>
+                        <div style="text-align: right;">
+                            <h3 style="font-size: 1rem;">TAX INVOICE</h3>
+                            <p style="font-size: 0.8rem;">Invoice: <strong id="lbl-inv-no">INV-1001</strong></p>
+                            <p style="font-size: 0.8rem;">Date: <span id="lbl-inv-date">--</span></p>
                         </div>
                     </div>
-                </div>
-
-                <!-- REVERSE BUDGET ESTIMATOR -->
-                <div class="form-grid">
-                    <div style="grid-column: 1 / -1;">
-                        <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; color: var(--primary-gold);">
-                            🎯 2. Reverse Budget Estimator
-                        </h3>
+                    <div style="margin-bottom: 15px; font-size: 0.85rem;">
+                        <strong>Billed To:</strong>
+                        <p id="lbl-cust-name">Walk-in Customer</p>
+                        <p id="lbl-cust-phone">N/A</p>
                     </div>
-
-                    <div class="form-group" style="grid-column: 1 / -1;">
-                        <label>Target Customer Budget (₹)</label>
-                        <input type="number" id="budg-amount" placeholder="e.g. 50000" oninput="calcReverseBudget()">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Gold Purity Choice</label>
-                        <select id="budg-purity" onchange="calcReverseBudget()">
-                            <option value="24">24K Gold</option>
-                            <option value="22" selected>22K Gold</option>
-                            <option value="18">18K Gold</option>
-                            <option value="10">10K Gold</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Fixed Labor Budget (₹)</label>
-                        <input type="number" id="budg-labor" value="1000" oninput="calcReverseBudget()">
-                    </div>
-
-                    <div class="calc-result-box" style="background: #f0f7ff; border-color: #3498db;" id="budg-result">
-                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 5px;">Max Gold Weight Possible:</div>
-                        <h2 style="font-size: 1.8rem; color: #2980b9;" id="budg-max-weight">0.00 Grams</h2>
+                    <table class="custom-table" style="margin-bottom: 15px;">
+                        <thead>
+                            <tr><th>Item Details</th><th>Alloy</th><th>Qty</th><th>Price (₹)</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong id="lbl-item-title">No Item Selected</strong><br><span id="lbl-item-sku" style="font-size: 0.75rem; color: var(--text-muted);">--</span></td>
+                                <td id="lbl-item-alloy">--</td>
+                                <td id="lbl-item-qty">1</td>
+                                <td id="lbl-item-subtotal">₹0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div style="display:flex; flex-direction:column; align-items:flex-end; font-size:0.85rem; gap: 4px;">
+                        <div>Subtotal: <strong id="lbl-subtotal">₹0.00</strong></div>
+                        <div>Discount: <strong id="lbl-discount">₹0.00</strong></div>
+                        <div>GST (3%): <strong id="lbl-gst">₹0.00</strong></div>
+                        <div style="font-size: 1.1rem; border-top: 1px solid #ccc; padding-top: 5px; color: var(--primary-gold);">Grand Total: <strong id="lbl-grand-total">₹0.00</strong></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- TAB 2: INVENTORY AUDIT TABLE -->
+        <!-- TAB 2: INVENTORY TRACKING -->
         <div id="inventory" class="tab-content">
             <div class="table-responsive">
                 <table class="custom-table">
                     <thead>
-                        <tr>
-                            <th>SKU & Name</th>
-                            <th>Alloy Purity</th>
-                            <th>Weight</th>
-                            <th>Labor Fee</th>
-                            <th>Image Link</th>
-                        </tr>
+                        <tr><th>SKU & Item Name</th><th>Alloy Purity</th><th>Weight (g)</th><th>Making Charges</th><th>Current Stock</th><th>Status</th></tr>
                     </thead>
                     <tbody id="inventory-table-body">
-                        <tr><td colspan="5">Loading...</td></tr>
+                        <tr><td colspan="6">Loading...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- TAB 3: PRICING MATRICES -->
-        <div id="pricing" class="tab-content">
-            <div class="form-grid">
-                <div style="grid-column: 1 / -1;">
-                    <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">LIVE CONVERTED METAL RATES</h3>
+        <!-- TAB 3: BULK EXCEL/CSV IMPORT -->
+        <div id="import" class="tab-content">
+            <div class="form-grid" style="grid-template-columns: 1fr;">
+                <h3 style="font-size: 1rem; color: var(--primary-gold);">📂 Bulk Import Stock via Excel or CSV</h3>
+                <p style="font-size:0.8rem; color: var(--text-muted);">Upload a file with columns: <b>SKU, Name, Alloy, Weight, Labor, Stock</b></p>
+                
+                <div class="drop-zone" onclick="document.getElementById('excelFileInput').click()">
+                    📄 Click to Select or Drop Excel/CSV File Here
+                    <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" style="display:none;" onchange="handleBulkImport(event)">
                 </div>
-                <div class="form-group"><label>24K Gold Base Rate (per Gram)</label><input type="text" id="matrix-24k" value="Calculating..." readonly></div>
-                <div class="form-group"><label>22K Gold Rate (Calculated)</label><input type="text" id="matrix-22k" value="Calculating..." readonly></div>
-                <div class="form-group"><label>18K Gold Rate (Calculated)</label><input type="text" id="matrix-18k" value="Calculating..." readonly></div>
-                <div class="form-group"><label>10K Gold Rate (Calculated)</label><input type="text" id="matrix-10k" value="Calculating..." readonly></div>
+
+                <div class="table-responsive" style="margin-top: 15px;">
+                    <table class="custom-table" id="parsed-excel-table">
+                        <thead>
+                            <tr><th>SKU</th><th>Name</th><th>Alloy</th><th>Weight</th><th>Labor</th><th>Stock</th></tr>
+                        </thead>
+                        <tbody><tr><td colspan="6" style="text-align: center;">No file uploaded yet.</td></tr></tbody>
+                    </table>
+                </div>
+                <button class="btn-gold" id="btn-sync-bulk" onclick="syncBulkDataToSheet()" style="display:none; margin-top: 10px;">Sync Imported Data to Google Sheets</button>
             </div>
         </div>
 
-        <!-- TAB 4: DESIGN REGISTER -->
+        <!-- TAB 4: CUSTOM ESTIMATOR -->
+        <div id="estimator" class="tab-content">
+            <div class="estimator-grid">
+                <div class="form-grid">
+                    <div style="grid-column: 1 / -1;"><h3 style="font-size: 1rem; color: var(--primary-gold);">🧮 Custom Estimator</h3></div>
+                    <div class="form-group"><label>Gold Purity</label><select id="cust-purity" onchange="calcCustomDemand()"><option value="24">24K</option><option value="22" selected>22K</option><option value="18">18K</option></select></div>
+                    <div class="form-group"><label>Weight (g)</label><input type="number" id="cust-weight" placeholder="0.0" oninput="calcCustomDemand()"></div>
+                    <div class="form-group"><label>Diamond (Carat)</label><input type="number" id="cust-diamond" placeholder="0.0" oninput="calcCustomDemand()"></div>
+                    <div class="form-group"><label>Making Charge (₹)</label><input type="number" id="cust-labor" placeholder="0" oninput="calcCustomDemand()"></div>
+                    <div style="grid-column:1 / -1; font-weight:bold; color: var(--primary-gold);" id="out-total-price">Estimated Price: ₹0.00</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: PRICING MATRICES -->
+        <div id="pricing" class="tab-content">
+            <div class="form-grid">
+                <div style="grid-column: 1 / -1;"><h3 style="font-size: 1rem;">LIVE CONVERTED METAL RATES</h3></div>
+                <div class="form-group"><label>24K Base Rate</label><input type="text" id="matrix-24k" readonly></div>
+                <div class="form-group"><label>22K Calculated</label><input type="text" id="matrix-22k" readonly></div>
+                <div class="form-group"><label>18K Calculated</label><input type="text" id="matrix-18k" readonly></div>
+            </div>
+        </div>
+
+        <!-- TAB 6: DESIGN REGISTER -->
         <div id="design" class="tab-content">
             <div class="form-grid">
-                <div style="grid-column: 1 / -1; margin-bottom: 10px;">
-                    <h3 style="font-size: 1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 15px;">💎 REGISTER NEW DESIGN TO CLOUD SHEET</h3>
-                </div>
+                <div style="grid-column: 1 / -1;"><h3 style="font-size: 1rem; color: var(--primary-gold);">💎 Add Single Item</h3></div>
+                <div class="form-group"><label>SKU</label><input type="text" id="sku" placeholder="SKU-001"></div>
+                <div class="form-group"><label>Name</label><input type="text" id="name" placeholder="Item Name"></div>
+                <div class="form-group"><label>Alloy</label><select id="alloy"><option value="22K Gold">22K Gold</option><option value="18K Gold">18K Gold</option></select></div>
+                <div class="form-group"><label>Weight (g)</label><input type="number" id="weight"></div>
+                <div class="form-group"><label>Labor (₹)</label><input type="number" id="labor"></div>
+                <div class="form-group"><label>Stock</label><input type="number" id="stock" value="1"></div>
+                <div class="form-group" style="grid-column: 1 / -1;"><label>Image File</label><input type="file" id="imageFile"></div>
+                <button class="btn-gold" style="grid-column: 1 / -1;" id="submitBtn" onclick="uploadData()">Save to Sheet</button>
+            </div>
+        </div>
+    </div>
 
-                <div class="form-group"><label>SKU</label><input type="text" id="sku" placeholder="e.g. RNG-001"></div>
-                <div class="form-group"><label>NAME</label><input type="text" id="name" placeholder="Product Name"></div>
-                <div class="form-group">
-                    <label>FAMILY</label>
-                    <select id="family">
-                        <option value="Rings">Rings</option>
-                        <option value="Necklaces">Necklaces</option>
-                        <option value="Bangles">Bangles</option>
-                        <option value="Earrings">Earrings</option>
-                    </select>
+    <!-- VISITING CARD ADMIN LOGIN MODAL -->
+    <div class="login-modal-overlay" id="loginModal">
+        <button class="close-modal-btn" onclick="closeLoginModal()">✕</button>
+        <div class="card-container">
+            <div class="card" id="authCard">
+                <div class="card-face card-front">
+                    <div class="left-panel">
+                        <div class="brand-logo">fly2laksh</div>
+                        <p style="font-size:10px; color:#2b5e3b; margin-bottom:10px;">Data • Automation • Growth</p>
+                        <input type="text" id="login-user" class="modal-input" placeholder="Username">
+                        <input type="password" id="login-pass" class="modal-input" placeholder="Password">
+                        <button class="modal-btn" onclick="processAdminLogin()">Login</button>
+                    </div>
+                    <div class="right-panel">
+                        <div style="color: #143622; font-weight: bold; font-size: 13px;">Nilkanth Kumar</div>
+                        <div style="font-size: 10px; color: #2b5e3b;">business@fly2laksh.in</div>
+                        <div style="font-size: 10px; color: #2b5e3b;">+91 8802355381</div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label>ALLOY / PURITY</label>
-                    <select id="alloy">
-                        <option value="22K Gold">22K Gold</option>
-                        <option value="18K Gold">18K Gold</option>
-                        <option value="10K Gold">10K Gold</option>
-                        <option value="24K Gold">24K Gold</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>METAL WEIGHT (G)</label><input type="number" id="weight" placeholder="0.0"></div>
-                <div class="form-group"><label>LABOR COST (₹)</label><input type="number" id="labor" placeholder="150"></div>
-                
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>UPLOAD JEWELRY IMAGE</label>
-                    <input type="file" id="imageFile" accept="image/*" style="padding: 10px; background: transparent; border: 1px dashed var(--primary-gold);">
-                </div>
-
-                <div class="form-group" style="grid-column: 1 / -1;">
-                    <button class="btn-gold" id="submitBtn" onclick="uploadData()" style="width: 100%;">Sync to Google Sheets</button>
-                </div>
-                <div id="status-msg"></div>
             </div>
         </div>
     </div>
@@ -345,318 +365,190 @@
 
         let isAdminLoggedIn = false;
         let globalCatalogData = [];
+        let parsedBulkItems = [];
 
-        // Dynamic Rates
         let RATE_24K = 8150.00;
         let RATE_22K = 7470.83;
         let RATE_18K = 6112.50;
-        let RATE_10K = 3395.83;
-        let RATE_DIAMOND_CT = 50000.00;
 
-        // Base 24K Rate se Automatic 22K, 18K, 10K Calculate karna
         function calculateAllPurityRates(base24k) {
             RATE_24K = base24k;
             RATE_22K = base24k * (22 / 24);
             RATE_18K = base24k * (18 / 24);
-            RATE_10K = base24k * (10 / 24);
         }
 
-        // Google Drive Link Fix Helper
         function formatDriveUrl(url) {
             if (!url || url === "No Image") return "https://via.placeholder.com/300x200?text=No+Image";
-            if (url.includes("drive.google.com")) {
-                let match = url.match(/\/d\/([^\/]+)/) || url.match(/id=([^&]+)/);
-                if (match && match[1]) {
-                    return `https://lh3.googleusercontent.com/d/${match[1]}`;
-                }
-            }
+            let match = url.match(/\/d\/([^\/]+)/) || url.match(/id=([^&]+)/);
+            if (match && match[1]) return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800`;
             return url;
-        }
-
-        function updateUIWithLiveRates() {
-            // Top Marquee Ticker
-            let ticker = document.getElementById('live-ticker-content');
-            if(ticker) {
-                ticker.innerHTML = `<span class="dot"></span> LIVE MARKET &nbsp;•&nbsp; 24K: ₹${RATE_24K.toFixed(2)}/g &nbsp;•&nbsp; 22K: ₹${RATE_22K.toFixed(2)}/g &nbsp;•&nbsp; 18K: ₹${RATE_18K.toFixed(2)}/g &nbsp;•&nbsp; 10K: ₹${RATE_10K.toFixed(2)}/g`;
-            }
-
-            // Estimator Dropdown Options
-            let opt24 = document.getElementById('opt-24k');
-            let opt22 = document.getElementById('opt-22k');
-            let opt18 = document.getElementById('opt-18k');
-            let opt10 = document.getElementById('opt-10k');
-
-            if(opt24) opt24.innerText = `24K Gold (₹${RATE_24K.toFixed(2)}/g)`;
-            if(opt22) opt22.innerText = `22K Gold (₹${RATE_22K.toFixed(2)}/g)`;
-            if(opt18) opt18.innerText = `18K Gold (₹${RATE_18K.toFixed(2)}/g)`;
-            if(opt10) opt10.innerText = `10K Gold (₹${RATE_10K.toFixed(2)}/g)`;
-
-            // Matrix Tab Values
-            if(document.getElementById('matrix-24k')) document.getElementById('matrix-24k').value = `₹${RATE_24K.toFixed(2)}`;
-            if(document.getElementById('matrix-22k')) document.getElementById('matrix-22k').value = `₹${RATE_22K.toFixed(2)}`;
-            if(document.getElementById('matrix-18k')) document.getElementById('matrix-18k').value = `₹${RATE_18K.toFixed(2)}`;
-            if(document.getElementById('matrix-10k')) document.getElementById('matrix-10k').value = `₹${RATE_10K.toFixed(2)}`;
-            
-            calcCustomDemand();
-            calcReverseBudget();
         }
 
         window.onload = function() {
             switchToShowroom();
             loadShowroomData();
-
-            // Automatic Auto Refresh Every 3 Minutes (180000 ms)
-            setInterval(function() {
-                loadShowroomData();
-            }, 180000);
+            document.getElementById('lbl-inv-date').innerText = new Date().toLocaleDateString('en-IN');
         };
 
         function getRateForAlloy(alloyStr) {
             let str = String(alloyStr || "").toUpperCase();
             if (str.includes("18")) return RATE_18K;
-            if (str.includes("10")) return RATE_10K;
-            if (str.includes("24")) return RATE_24K;
             return RATE_22K; 
         }
 
         function loadShowroomData() {
             const gridContainer = document.getElementById('showroom-grid-container');
             const tableBody = document.getElementById('inventory-table-body');
+            const invSelect = document.getElementById('inv-select-item');
             
-            gridContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: var(--text-muted);">⏳ Syncing Live Rate & Inventory from Google Sheet...</p>`;
+            gridContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center;">⏳ Loading Catalog & Live Market Rates...</p>`;
 
             fetch(SCRIPT_URL, { method: "GET", redirect: "follow" })
             .then(res => res.json())
             .then(data => {
-                // Read Live 24K Rate from Cell H2 via Google Apps Script
                 let base24 = parseFloat(data.rate24k) || 8150;
                 calculateAllPurityRates(base24);
-                updateUIWithLiveRates();
+
+                document.getElementById('live-ticker-content').innerHTML = `<span class="dot"></span> LIVE MARKET • 24K: ₹${RATE_24K.toFixed(2)}/g • 22K: ₹${RATE_22K.toFixed(2)}/g • 18K: ₹${RATE_18K.toFixed(2)}/g`;
+                document.getElementById('matrix-24k').value = `₹${RATE_24K.toFixed(2)}`;
+                document.getElementById('matrix-22k').value = `₹${RATE_22K.toFixed(2)}`;
+                document.getElementById('matrix-18k').value = `₹${RATE_18K.toFixed(2)}`;
 
                 let items = data.items || [];
-                if(!items || items.length === 0) {
-                    gridContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center;">No Products Available in Google Sheet.</p>`;
-                    return;
-                }
-
-                globalCatalogData = items; 
+                globalCatalogData = items;
                 gridContainer.innerHTML = '';
                 if(tableBody) tableBody.innerHTML = '';
+                if(invSelect) invSelect.innerHTML = '<option value="">-- Choose Stock Item --</option>';
 
-                items.forEach(item => {
+                items.forEach((item, idx) => {
                     let sku = item["SKU"] || "N/A";
                     let name = item["Name"] || "Gold Jewelry";
                     let alloy = item["Alloy"] || "22K Gold";
                     let weight = parseFloat(item["Weight"]) || 0;
                     let labor = parseFloat(item["Labor Fee"]) || 0;
-                    let rawImg = item["Image Link"] || "";
+                    let stock = parseInt(item["Stock"]) || 0;
+                    let displayImg = formatDriveUrl(item["Image Link"]);
 
-                    let perGramRate = getRateForAlloy(alloy);
-                    let estimatedPrice = (weight * perGramRate) + labor;
+                    let price = ((weight * getRateForAlloy(alloy)) + labor) * 1.03;
 
-                    let displayImg = formatDriveUrl(rawImg);
-
-                    let cardHTML = `
+                    gridContainer.innerHTML += `
                         <div class="jewelry-card">
-                            <div>
-                                <div class="jewelry-img-box">
-                                    <img src="${displayImg}" alt="${name}" onerror="this.src='https://via.placeholder.com/300x200?text=Image+Error';">
-                                </div>
-                                <span class="badge">${alloy.toUpperCase()}</span>
-                                <h3>${name}</h3>
-                                <div class="details-row"><span>SKU Code:</span> <strong>${sku}</strong></div>
-                                <div class="details-row"><span>Metal Weight:</span> <strong>${weight} gms</strong></div>
-                                <div class="details-row"><span>Labor Fee:</span> <strong>₹${labor}</strong></div>
-                            </div>
-                            <div class="price-tag">
-                                <span>Estimated Price:</span>
-                                <span>₹${estimatedPrice.toFixed(2)}</span>
-                            </div>
+                            <span class="stock-tag ${stock <= 0 ? 'out':''}">${stock <= 0 ? 'OUT OF STOCK' : 'STOCK: ' + stock}</span>
+                            <div class="jewelry-img-box"><img src="${displayImg}" loading="lazy"></div>
+                            <span class="badge">${alloy.toUpperCase()}</span>
+                            <h3>${name}</h3>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">SKU: ${sku} | Weight: ${weight}g</div>
+                            <div style="font-weight:bold; color:var(--primary-gold); margin-top:10px;">₹${price.toFixed(2)} (Incl. GST)</div>
                         </div>
                     `;
-                    gridContainer.innerHTML += cardHTML;
 
                     if(tableBody) {
-                        let rowHTML = `
-                            <tr>
-                                <td><strong>${sku}</strong><br><span style="color:var(--text-muted)">${name}</span></td>
-                                <td>${alloy}</td>
-                                <td>${weight}g</td>
-                                <td>₹${labor}</td>
-                                <td><a href="${displayImg}" target="_blank">View Image</a></td>
-                            </tr>
-                        `;
-                        tableBody.innerHTML += rowHTML;
+                        tableBody.innerHTML += `<tr><td><b>${sku}</b><br>${name}</td><td>${alloy}</td><td>${weight}g</td><td>₹${labor}</td><td>${stock}</td><td><b style="color:${stock > 0 ? 'green':'red'}">${stock > 0 ? 'Available':'Out of Stock'}</b></td></tr>`;
+                    }
+                    if(invSelect && stock > 0) {
+                        invSelect.innerHTML += `<option value="${idx}">${sku} - ${name} (Stock: ${stock})</option>`;
                     }
                 });
-            })
-            .catch(err => {
-                gridContainer.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; color: red;">❌ Error loading data from Google Script.</p>`;
-                console.error("Fetch Error:", err);
             });
         }
 
-        function calcCustomDemand() {
-            const purity = document.getElementById('cust-purity').value;
-            const weight = parseFloat(document.getElementById('cust-weight').value) || 0;
-            const diamond = parseFloat(document.getElementById('cust-diamond').value) || 0;
-            const labor = parseFloat(document.getElementById('cust-labor').value) || 0;
+        /* BULK EXCEL & CSV IMPORT HANDLER */
+        function handleBulkImport(e) {
+            const file = e.target.files[0];
+            if(!file) return;
 
-            let ratePerGram = RATE_22K;
-            if(purity === "18") ratePerGram = RATE_18K;
-            if(purity === "10") ratePerGram = RATE_10K;
-            if(purity === "24") ratePerGram = RATE_24K;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                parsedBulkItems = XLSX.utils.sheet_to_json(worksheet);
 
-            let goldCost = weight * ratePerGram;
-            let diamondCost = diamond * RATE_DIAMOND_CT;
-            let subtotal = goldCost + diamondCost + labor;
-            let gst = subtotal * 0.03;
-            let total = subtotal + gst;
+                let tbody = document.querySelector("#parsed-excel-table tbody");
+                tbody.innerHTML = "";
 
-            document.getElementById('out-gold-cost').innerText = "₹" + goldCost.toFixed(2);
-            document.getElementById('out-diamond-cost').innerText = "₹" + diamondCost.toFixed(2);
-            document.getElementById('out-labor-cost').innerText = "₹" + labor.toFixed(2);
-            document.getElementById('out-gst-cost').innerText = "₹" + gst.toFixed(2);
-            document.getElementById('out-total-price').innerText = "₹" + total.toFixed(2);
+                parsedBulkItems.forEach(row => {
+                    tbody.innerHTML += `<tr><td>${row.SKU || ''}</td><td>${row.Name || ''}</td><td>${row.Alloy || ''}</td><td>${row.Weight || 0}</td><td>${row.Labor || 0}</td><td>${row.Stock || 0}</td></tr>`;
+                });
+
+                document.getElementById('btn-sync-bulk').style.display = 'block';
+            };
+            reader.readAsArrayBuffer(file);
         }
 
-        function calcReverseBudget() {
-            const budget = parseFloat(document.getElementById('budg-amount').value) || 0;
-            const purity = document.getElementById('budg-purity').value;
-            const labor = parseFloat(document.getElementById('budg-labor').value) || 0;
+        function syncBulkDataToSheet() {
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "bulk_import", items: parsedBulkItems }) })
+            .then(res => res.json())
+            .then(data => { alert("✅ Bulk Items Uploaded!"); loadShowroomData(); });
+        }
 
-            if(budget <= 0) {
-                document.getElementById('budg-max-weight').innerText = "0.00 Grams";
-                return;
-            }
+        /* INVOICE & SALE logic */
+        function updateInvoicePreview() {
+            const idx = document.getElementById('inv-select-item').value;
+            const name = document.getElementById('cust-name').value || "Walk-in Customer";
+            const phone = document.getElementById('cust-phone').value || "N/A";
+            const qty = parseInt(document.getElementById('inv-qty').value) || 1;
+            const discount = parseFloat(document.getElementById('inv-discount').value) || 0;
 
-            let ratePerGram = RATE_22K;
-            if(purity === "18") ratePerGram = RATE_18K;
-            if(purity === "10") ratePerGram = RATE_10K;
-            if(purity === "24") ratePerGram = RATE_24K;
-            
-            let subtotalBudget = budget / 1.03;
-            let goldBudget = subtotalBudget - labor;
+            document.getElementById('lbl-cust-name').innerText = name;
+            document.getElementById('lbl-cust-phone').innerText = phone;
+            document.getElementById('lbl-item-qty').innerText = qty;
 
-            if(goldBudget <= 0) {
-                document.getElementById('budg-max-weight').innerText = "Budget too low for labor charge";
-                return;
-            }
+            if (idx === "" || !globalCatalogData[idx]) return;
 
-            let maxWeight = goldBudget / ratePerGram;
-            document.getElementById('budg-max-weight').innerText = maxWeight.toFixed(2) + " Grams";
+            let item = globalCatalogData[idx];
+            let unitPrice = (parseFloat(item["Weight"]) * getRateForAlloy(item["Alloy"])) + parseFloat(item["Labor Fee"]);
+            let subtotal = (unitPrice * qty) - discount;
+            let gst = subtotal * 0.03;
+
+            document.getElementById('lbl-item-title').innerText = item["Name"];
+            document.getElementById('lbl-item-sku').innerText = item["SKU"];
+            document.getElementById('lbl-item-alloy').innerText = item["Alloy"];
+            document.getElementById('lbl-item-subtotal').innerText = "₹" + (unitPrice * qty).toFixed(2);
+            document.getElementById('lbl-subtotal').innerText = "₹" + subtotal.toFixed(2);
+            document.getElementById('lbl-discount').innerText = "₹" + discount.toFixed(2);
+            document.getElementById('lbl-gst').innerText = "₹" + gst.toFixed(2);
+            document.getElementById('lbl-grand-total').innerText = "₹" + (subtotal + gst).toFixed(2);
+        }
+
+        function processSaleAndDeductStock() {
+            const idx = document.getElementById('inv-select-item').value;
+            if (idx === "") { alert("Select an item!"); return; }
+            let item = globalCatalogData[idx];
+
+            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "deduct_stock", sku: item["SKU"], qty: document.getElementById('inv-qty').value }) })
+            .then(() => { alert("✅ Sale Recorded & Inventory Deducted!"); loadShowroomData(); });
         }
 
         function switchToShowroom() {
             document.querySelectorAll('.admin-only').forEach(el => el.classList.add('admin-only'));
             document.getElementById('admin-header-box').style.display = 'none';
-
-            document.getElementById('btn-showroom').classList.add('active');
-            document.getElementById('btn-admin').classList.remove('active');
-
             switchTab('showroom');
         }
 
         function requestAdminAccess() {
-            if (isAdminLoggedIn) {
-                switchTab('estimator');
-                return;
-            }
+            if (isAdminLoggedIn) { switchTab('invoice'); return; }
+            document.getElementById('loginModal').style.display = 'flex';
+        }
 
-            const username = prompt("Enter Admin Username:");
-            if (!username) return;
+        function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
 
-            const password = prompt("Enter Admin Password:");
-            if (!password) return;
-
-            if (username === "admin" && password === "1234") {
+        function processAdminLogin() {
+            if (document.getElementById('login-user').value === "admin" && document.getElementById('login-pass').value === "1234") {
                 isAdminLoggedIn = true;
-                alert("✅ Admin Access Granted!");
-                
+                closeLoginModal();
                 document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('admin-only'));
                 document.getElementById('admin-header-box').style.display = 'flex';
-                
-                document.getElementById('btn-admin').classList.add('active');
-                document.getElementById('btn-showroom').classList.remove('active');
-                
-                switchTab('estimator');
-            } else {
-                alert("❌ Invalid Username or Password!");
-            }
+                switchTab('invoice');
+            } else { alert("❌ Invalid Password!"); }
         }
 
         function switchTab(tabId) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            
-            const activeTabBtn = document.getElementById('tab-btn-' + tabId);
-            if(activeTabBtn) activeTabBtn.classList.add('active');
-            
-            const content = document.getElementById(tabId);
-            if(content) content.classList.add('active');
-        }
-
-        function uploadData() {
-            const btn = document.getElementById('submitBtn');
-            const statusMsg = document.getElementById('status-msg');
-            const fileInput = document.getElementById('imageFile');
-            
-            btn.innerText = "⏳ Uploading to Google Cloud...";
-            btn.disabled = true;
-
-            let payload = {
-                sku: document.getElementById('sku').value,
-                name: document.getElementById('name').value,
-                family: document.getElementById('family').value,
-                alloy: document.getElementById('alloy').value,
-                weight: document.getElementById('weight').value,
-                labor: document.getElementById('labor').value,
-            };
-
-            if (fileInput.files.length > 0) {
-                let file = fileInput.files[0];
-                let reader = new FileReader();
-                reader.onload = function(e) {
-                    let base64 = e.target.result.split(',')[1];
-                    payload.imageB64 = base64;
-                    payload.filename = file.name;
-                    payload.mimeType = file.type;
-                    sendToGoogle(payload, btn, statusMsg);
-                };
-                reader.readAsDataURL(file);
-            } else {
-                sendToGoogle(payload, btn, statusMsg);
-            }
-        }
-
-        function sendToGoogle(payload, btn, statusMsg) {
-            fetch(SCRIPT_URL, {
-                method: "POST",
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.innerText = "Sync to Google Sheets";
-                btn.disabled = false;
-                if(data.status === "success") {
-                    statusMsg.style.color = "#2ecc71";
-                    statusMsg.innerText = "✅ Successfully saved to Google Sheets & Drive!";
-                    document.getElementById('sku').value = '';
-                    document.getElementById('name').value = '';
-                    document.getElementById('weight').value = '';
-                    document.getElementById('labor').value = '';
-                    document.getElementById('imageFile').value = '';
-                    
-                    loadShowroomData();
-                }
-            })
-            .catch(err => {
-                btn.innerText = "Sync to Google Sheets";
-                btn.disabled = false;
-                statusMsg.style.color = "#e74c3c";
-                statusMsg.innerText = "❌ Upload Failed. Check console.";
-                console.log(err);
-            });
+            if(document.getElementById('tab-btn-' + tabId)) document.getElementById('tab-btn-' + tabId).classList.add('active');
+            if(document.getElementById(tabId)) document.getElementById(tabId).classList.add('active');
         }
     </script>
 </body>
