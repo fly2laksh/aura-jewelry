@@ -463,7 +463,7 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-QXsvFbB80jVroxyLp3e6KoWMo78WafEOcSzJ0-cpp4I3iAzODCjkN1ljXGQ23bGW/exec"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLrGEE1jY-65CN0DGGgUJP3p8zxgkkiwwjGIJnmbHhMKPXmsnJixuYimsimTSufVQ/exec"; 
 
         let isAdminLoggedIn = false;
         let globalCatalogData = [];
@@ -615,7 +615,7 @@
             document.getElementById('out-max-weight').innerText = maxWeight.toFixed(2) + " Grams";
         }
 
-        /* BULK EXCEL & CSV IMPORT HANDLER */
+/* BULK EXCEL & CSV IMPORT HANDLER */
         function handleBulkImport(e) {
             const file = e.target.files[0];
             if(!file) return;
@@ -626,13 +626,30 @@
                 const workbook = XLSX.read(data, {type: 'array'});
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
-                parsedBulkItems = XLSX.utils.sheet_to_json(worksheet);
+                
+                parsedBulkItems = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
                 let tbody = document.querySelector("#parsed-excel-table tbody");
-                tbody.innerHTML = "";
+                if(tbody) tbody.innerHTML = "";
 
                 parsedBulkItems.forEach(row => {
-                    tbody.innerHTML += `<tr><td>${row.SKU || ''}</td><td>${row.Name || ''}</td><td>${row.Alloy || ''}</td><td>${row.Weight || 0}</td><td>${row.Labor || 0}</td><td>${row.Stock || 0}</td></tr>`;
+                    let sku = row.SKU || row.sku || "";
+                    let name = row.Name || row.name || "";
+                    let alloy = row.Alloy || row.alloy || "22K Gold";
+                    let weight = row.Weight || row.weight || 0;
+                    let labor = row.Labor || row["Labor Fee"] || row.labor || 0;
+                    let stock = row.Stock || row.stock || 0;
+
+                    if(tbody) {
+                        tbody.innerHTML += `<tr>
+                            <td>${sku}</td>
+                            <td>${name}</td>
+                            <td>${alloy}</td>
+                            <td>${weight}</td>
+                            <td>${labor}</td>
+                            <td>${stock}</td>
+                        </tr>`;
+                    }
                 });
 
                 document.getElementById('btn-sync-bulk').style.display = 'block';
@@ -641,9 +658,40 @@
         }
 
         function syncBulkDataToSheet() {
-            fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "bulk_import", items: parsedBulkItems }) })
+            if (!parsedBulkItems || parsedBulkItems.length === 0) {
+                alert("Pehle Excel/CSV file upload karein!");
+                return;
+            }
+
+            const btn = document.getElementById('btn-sync-bulk');
+            if (btn) btn.innerText = "⏳ Syncing to Google Sheets...";
+
+            fetch(SCRIPT_URL, { 
+                method: "POST", 
+                headers: {
+                    "Content-Type": "text/plain;charset=utf-8"
+                },
+                body: JSON.stringify({ 
+                    action: "bulk_import", 
+                    items: parsedBulkItems 
+                }) 
+            })
             .then(res => res.json())
-            .then(data => { alert("✅ Bulk Items Uploaded!"); loadShowroomData(); });
+            .then(data => { 
+                if (btn) btn.innerText = "Sync Imported Data to Google Sheets";
+                
+                if (data.status === "success") {
+                    alert("✅ Bulk Items Google Sheet me Sync ho gaye!"); 
+                    loadShowroomData(); 
+                } else {
+                    alert("❌ Sync Error: " + data.message);
+                }
+            })
+            .catch(err => {
+                if (btn) btn.innerText = "Sync Imported Data to Google Sheets";
+                console.error("Sync Error:", err);
+                alert("❌ Sync karne me dikkat aayi!");
+            });
         }
 
         /* INVOICE & SALE LOGIC */
@@ -698,7 +746,7 @@
         function closeLoginModal() { document.getElementById('loginModal').style.display = 'none'; }
 
         function processAdminLogin() {
-            if (document.getElementById('login-user').value === "fly2laksh" && document.getElementById('login-pass').value === "Nil@1990") {
+            if (document.getElementById('login-user').value === "admin" && document.getElementById('login-pass').value === "1234") {
                 isAdminLoggedIn = true;
                 closeLoginModal();
                 document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('admin-only'));
